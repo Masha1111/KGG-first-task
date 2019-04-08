@@ -4,10 +4,9 @@ import math
 
 # вычисление значения функции
 def func(x):
-    # return math.sin(x)
-    # return x*math.sin(x*x)
+    return math.sin(x)
     # return x*x
-    return x
+    # return x
 
 
 # нахождение максимального и минимального значения функции
@@ -41,8 +40,12 @@ def calculate(xx, x_0, old_y):
 
 # отрисовка осей
 def drow_axis(x, y):
+    f = ymin
+    d = (round(x, 3))
     if x is not None:
         canvas.create_line(0, x, 500, x, fill="black", arrow=LAST)
+            # elif round(ymin, 2) == 0:
+            #     canvas.create_line(0, x, 500, x, fill="black", arrow=LAST)
     if y is not None:
         canvas.create_line(y, 500, y, 0, fill="black", arrow=LAST)
 
@@ -72,7 +75,7 @@ def main():
     yy = (func(a) - ymin)*500/(ymax - ymin)
     yy_old = yy
     y_old = ymin
-    abscissa_coord = ymin - 1
+    abscissa_coord = yy
     for xx in range(0, 500):
         yy, abscissa_coord, old = calculate(xx, abscissa_coord, y_old)
         canvas.create_line(xx, yy_old, xx + 1, yy, fill="#ff0000")
