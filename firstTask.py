@@ -4,9 +4,9 @@ import math
 
 # вычисление значения функции
 def func(x):
-    return math.sin(x)
+    # return math.sin(x)
     # return x*x
-    # return x
+    return x
 
 
 # нахождение максимального и минимального значения функции
