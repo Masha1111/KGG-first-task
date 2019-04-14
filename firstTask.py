@@ -28,16 +28,18 @@ def calculate(xx, old_y, flag):
     x = a + xx*(b - a)/500
     y = func(x)
     yy = (y - ymax)*500/(ymin - ymax)
-    if (y == 0) and (flag is False):
-        canvas.create_line(0, yy, 500, yy, fill="black", arrow=LAST)
-        flag = True
-    elif (flag is False) and (round(y * 1000) / 1000 == 0 or ((old_y < 0) and (y > 0) and (math.floor(y) == 0)) or ((old_y > 0) and (y < 0) and (math.ceil(y) == 0))):
-        # if y < 0 - old_y:
-        #     x_0 = yy
-        # else:
-        #     x_0 = (old_y - ymax)*500/(ymin - ymax)
-        canvas.create_line(0, yy, 500, yy, fill="black", arrow=LAST)
-        flag = True
+    if flag is False:
+        if y == 0:
+            canvas.create_line(0, yy, 500, yy, fill="black", arrow=LAST)
+            flag = True
+    # если разных знаков
+    elif (flag is False) and (((y > 0) and (old_y < 0)) or ((y > 0) and (old_y < 0))):
+        if math.fabs(0 - yy) < math.fabs(0 - (old_y - ymax)*500/(ymin - ymax)):
+            canvas.create_line(0, yy, 500, yy, fill="black", arrow=LAST)
+            flag = True
+        else:
+            canvas.create_line(0, (old_y - ymax)*500/(ymin - ymax), 500, (old_y - ymax)*500/(ymin - ymax), fill="black", arrow=LAST)
+            flag = True
     old_y = y
     return yy, old_y, flag
 
