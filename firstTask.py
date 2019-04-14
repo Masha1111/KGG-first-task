@@ -23,33 +23,20 @@ def max_min():
     return ymin, ymax
 
 
-# вычисление у по х, масштабирование, поиск координаты у для отрисовки оси ОХ
+# вычисление у по х, масштабирование
 def calculate(xx, old_y, flag):
     x = a + xx*(b - a)/500
     y = func(x)
     yy = (y - ymax)*500/(ymin - ymax)
-    if flag is False:
-        if y == 0:
-            canvas.create_line(0, yy, 500, yy, fill="black", arrow=LAST)
-            flag = True
-    # если разных знаков
-    elif (flag is False) and (((y > 0) and (old_y < 0)) or ((y > 0) and (old_y < 0))):
-        if math.fabs(0 - yy) < math.fabs(0 - (old_y - ymax)*500/(ymin - ymax)):
-            canvas.create_line(0, yy, 500, yy, fill="black", arrow=LAST)
-            flag = True
-        else:
-            canvas.create_line(0, (old_y - ymax)*500/(ymin - ymax), 500, (old_y - ymax)*500/(ymin - ymax), fill="black", arrow=LAST)
-            flag = True
+    if y < 0:
+        flag[1] = True
+    if y > 0:
+        flag[2] = True
+    if y == 0:
+        flag[0] = True
+        flag[3] = yy
     old_y = y
     return yy, old_y, flag
-
-
-# отрисовка осей
-def drow_axis(x):
-    if x is not None:
-        canvas.create_line(0, x, 500, x, fill="black", arrow=LAST)
-            # elif round(ymin, 2) == 0:
-            #     canvas.create_line(0, x, 500, x, fill="black", arrow=LAST)
 
 
 # поиск координаты х для отрисовки оси ОУ, отрисовка
@@ -74,6 +61,30 @@ def find_ordinate_coord():
                     drawn_axis_OY = True
 
 
+# поиск координаты y для отрисовки оси ОX, отрисовка
+def find_abscissa_coord(flag, y_min, y_max):
+    if flag[0] is True:
+        canvas.create_line(0, flag[3], 500, flag[3], fill="black", arrow=LAST)
+    else:
+        if (flag[1] is True) and (flag[2] is True):
+            old_y = y_min
+            diff = y_max - y_min
+            for xx in range(500):
+                x = a + xx * (b - a) / 500
+                y = func(x)
+                yy = (y - ymax) * 500 / (ymin - ymax)
+                if (((old_y < 0) and (y > 0)) or ((old_y > 0) and (y < 0))) and (math.fabs(y - old_y) < diff):
+                    yy_old = (old_y - ymax) * 500 / (ymin - ymax)
+                    diff = math.fabs(old_y - y)
+                    if math.fabs(old_y) < math.fabs(y):
+                        coord = yy_old
+                    else:
+                        coord = yy
+                old_y = y
+            canvas.create_line(0, coord, 500, coord, fill="black", arrow=LAST)
+
+
+
 def main():
     global ymin
     global ymax
@@ -81,15 +92,15 @@ def main():
     yy = (func(a) - ymin)*500/(ymax - ymin)
     yy_old = yy
     y_old = ymin
-    drawn_abscissa = False
+    y_0_flag = [False, None, None, None]
     for xx in range(0, 500):
-        yy, old, drawn_flag = calculate(xx, y_old, drawn_abscissa)
+        yy, old, flag = calculate(xx, y_old, y_0_flag)
         canvas.create_line(xx, yy_old, xx + 1, yy, fill="#ff0000")
         yy_old = yy
         y_old = old
-        drawn_abscissa = drawn_flag
+        y_0_flag = flag
     find_ordinate_coord()
-    # drow_axis(abscissa_coord)
+    find_abscissa_coord(y_0_flag, ymin, ymax)
 
 
 if __name__ == "__main__":
