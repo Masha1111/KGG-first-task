@@ -5,9 +5,9 @@ import math
 # вычисление значения функции
 def func(x):
     # return math.sin(x)
-    return x*x
+    # return x*x
     # return x
-    # return x*math.sin(x*x)
+    return x*math.sin(x*x)
 
 
 # нахождение максимального и минимального значения функции
@@ -24,19 +24,22 @@ def max_min():
 
 
 # вычисление у по х, масштабирование, поиск координаты у для отрисовки оси ОХ
-def calculate(xx, x_0, old_y):
+def calculate(xx, old_y, flag):
     x = a + xx*(b - a)/500
     y = func(x)
     yy = (y - ymax)*500/(ymin - ymax)
-    if y == 0:
-        x_0 = yy
-    elif (y > 0) and (old_y < 0):
-        if y < 0 - old_y:
-            x_0 = yy
-        else:
-            x_0 = (old_y - ymax)*500/(ymin - ymax)
+    if (y == 0) and (flag is False):
+        canvas.create_line(0, yy, 500, yy, fill="black", arrow=LAST)
+        flag = True
+    elif (flag is False) and (round(y * 1000) / 1000 == 0 or ((old_y < 0) and (y > 0) and (math.floor(y) == 0)) or ((old_y > 0) and (y < 0) and (math.ceil(y) == 0))):
+        # if y < 0 - old_y:
+        #     x_0 = yy
+        # else:
+        #     x_0 = (old_y - ymax)*500/(ymin - ymax)
+        canvas.create_line(0, yy, 500, yy, fill="black", arrow=LAST)
+        flag = True
     old_y = y
-    return yy, x_0, old_y
+    return yy, old_y, flag
 
 
 # отрисовка осей
@@ -72,18 +75,18 @@ def find_ordinate_coord():
 def main():
     global ymin
     global ymax
-    drawn_abscissa = False;
     ymin, ymax = max_min()
     yy = (func(a) - ymin)*500/(ymax - ymin)
     yy_old = yy
     y_old = ymin
-    abscissa_coord = yy
+    drawn_abscissa = False
     for xx in range(0, 500):
-        yy, abscissa_coord, old = calculate(xx, abscissa_coord, y_old)
+        yy, old, drawn_flag = calculate(xx, y_old, drawn_abscissa)
         canvas.create_line(xx, yy_old, xx + 1, yy, fill="#ff0000")
         yy_old = yy
         y_old = old
-    ordinate_coord = find_ordinate_coord()
+        drawn_abscissa = drawn_flag
+    find_ordinate_coord()
     # drow_axis(abscissa_coord)
 
 
